@@ -10,23 +10,34 @@ import (
 
 func main() {
 
-	xlFile, xlErr := excelize.OpenFile("Book1.xlsx")
+	xlFile := getExcelFile("TheProfessionals.xlsx")
+
+	worksheets := xlFile.GetSheetList()
+
+	for i := range worksheets {
+		createCSVFile(xlFile, worksheets, i)
+	}
+}
+
+func getExcelFile(fileName string) *excelize.File {
+	xlFile, xlErr := excelize.OpenFile(fileName)
 	if xlErr != nil {
-		fmt.Println(xlErr)
-		return
+		panic(xlErr)
 	}
 	defer func() {
 		if xlErr := xlFile.Close(); xlErr != nil {
 			panic(xlErr)
 		}
 	}()
+	return xlFile
+}
 
-	allRows, arErr := xlFile.GetRows("Sheet3")
+func createCSVFile(xlFile *excelize.File, worksheets []string, i int) {
+	allRows, arErr := xlFile.GetRows(worksheets[i])
 	if arErr != nil {
 		panic(arErr)
 	}
-
-	csvFile, csvErr := os.Create("text.csv")
+	csvFile, csvErr := os.Create(worksheets[i] + ".csv")
 	if csvErr != nil {
 		fmt.Println(csvErr)
 	}
@@ -42,5 +53,4 @@ func main() {
 	if writerErr != nil {
 		fmt.Println(writerErr)
 	}
-
 }
