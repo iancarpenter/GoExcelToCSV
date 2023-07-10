@@ -15,11 +15,12 @@ func main() {
 	worksheets := xlFile.GetSheetList()
 
 	for i := range worksheets {
-		createCSVFile(xlFile, worksheets, i)
+		createCSVFile(xlFile, worksheets[i])
 	}
 }
 
 func getExcelFile(fileName string) *excelize.File {
+
 	xlFile, xlErr := excelize.OpenFile(fileName)
 	if xlErr != nil {
 		panic(xlErr)
@@ -29,15 +30,18 @@ func getExcelFile(fileName string) *excelize.File {
 			panic(xlErr)
 		}
 	}()
+
 	return xlFile
 }
 
-func createCSVFile(xlFile *excelize.File, worksheets []string, i int) {
-	allRows, arErr := xlFile.GetRows(worksheets[i])
+func createCSVFile(xlFile *excelize.File, worksheet string) {
+
+	allRows, arErr := xlFile.GetRows(worksheet)
 	if arErr != nil {
 		panic(arErr)
 	}
-	csvFile, csvErr := os.Create(worksheets[i] + ".csv")
+
+	csvFile, csvErr := os.Create(worksheet + ".csv")
 	if csvErr != nil {
 		fmt.Println(csvErr)
 	}
